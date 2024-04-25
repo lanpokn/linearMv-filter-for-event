@@ -14,6 +14,29 @@ import numpy as np
 # local modules
 from util import Timer, Event, normalize_image, animate, load_events,load_events_volt, plot_3d, event_slice
 
+def initialState(event_data,c=0.1):
+    # Initialize an array of the same size as diff_state to store the event intensity corresponding to the minimum timestamp
+    events, height, width = event_data.event_list, event_data.height, event_data.width
+    max_count =  1.0*height * width
+    init_state = np.zeros((height, width), dtype=np.float32)
+    # Traverse all events
+    i = 0
+    for event in events:
+        # Get the position and event intensity of the event
+        x, y, p = event.x, event.y, event.p
+        
+        # If the current position is not initialized or the event intensity of the current event is greater than the recorded event intensity, update the event intensity
+        if init_state[x, y] == 0:
+            init_state[x, y] = p*c
+    
+        # Check if all positions have been initialized
+        # The probability of initializing all positions is very low, so it's fine to assign 0 to the background
+        # Therefore, only take the first max_count events to initialize
+        i = i + 1
+        if i > max_count:
+            break
+    return init_state
+
 def kalman_filter(event_data,c = 0.1):
     print('Filtering with Kalman Filter, please wait...')
     events, height, width = event_data.event_list, event_data.height, event_data.width
@@ -23,7 +46,8 @@ def kalman_filter(event_data,c = 0.1):
     with Timer('Filtering'):
         time_surface = np.zeros((height, width), dtype=np.float32)
         image_state = np.zeros((height, width), dtype=np.float32)
-        diff_state = np.zeros((height, width), dtype=np.float32)
+        # diff_state = np.zeros((height, width), dtype=np.float32)
+        diff_state = initialState(event_data,c)
         # diff_state = np.ones((height, width), dtype=np.float32)
 
         # covariance_state = np.full((height, width),c*c, dtype=np.float32)
