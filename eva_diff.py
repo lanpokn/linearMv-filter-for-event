@@ -1,3 +1,4 @@
+#the begin of the two images folder must have the same begin, or there won't be aligned!
 import os
 import cv2
 import numpy as np
@@ -13,7 +14,6 @@ def psnr(mse, max_value=1.0):
 def calculate_metrics(image_dir1, image_dir2):
     mse_values = []
     psnr_values = []
-    
     file_list1 = sorted(os.listdir(image_dir1))
     file_list2 = sorted(os.listdir(image_dir2))
     
@@ -54,12 +54,14 @@ def calculate_metrics2(image_dir1, image_dir2):
     file_list1 = sorted(os.listdir(image_dir1))
     file_list2 = sorted(os.listdir(image_dir2))
     
-    for i in range(1, min(len(file_list1), len(file_list2))):
+    for i in range(2, min(len(file_list1), len(file_list2))):
         prev_image_path1 = os.path.join(image_dir1, file_list1[i-1])
         curr_image_path1 = os.path.join(image_dir1, file_list1[i])
         
         prev_image_path2 = os.path.join(image_dir2, file_list2[i-1])
         curr_image_path2 = os.path.join(image_dir2, file_list2[i])
+        # prev_image_path2 = os.path.join(image_dir2, file_list2[i-2])
+        # curr_image_path2 = os.path.join(image_dir2, file_list2[i-1])
 
         prev_image1 = cv2.imread(prev_image_path1, cv2.IMREAD_ANYDEPTH | cv2.IMREAD_GRAYSCALE).astype(np.float32) / 255.0
         curr_image1 = cv2.imread(curr_image_path1, cv2.IMREAD_ANYDEPTH | cv2.IMREAD_GRAYSCALE).astype(np.float32) / 255.0

@@ -1,3 +1,6 @@
+#TODO 1: use linear interpolation based on time for event pixel, instead of the last change
+# this can be alleviate by 3DGSEventLoss, use relu to get a wider bound
+# 2: better noise 
 import os
 import cv2
 import matplotlib.pyplot as plt
@@ -11,7 +14,7 @@ import numpy as np
 # local modules
 from util import Timer, Event, normalize_image, animate, load_events,load_events_volt, plot_3d, event_slice
 
-def kalman_filter(event_data, process_noise=0.1, observation_noise=0.5):
+def kalman_filter(event_data,c = 0.1):
     print('Filtering with Kalman Filter, please wait...')
     events, height, width = event_data.event_list, event_data.height, event_data.width
     frames, frame_timestamps = event_data.frames, event_data.frame_timestamps
@@ -20,12 +23,14 @@ def kalman_filter(event_data, process_noise=0.1, observation_noise=0.5):
     with Timer('Filtering'):
         time_surface = np.zeros((height, width), dtype=np.float32)
         image_state = np.zeros((height, width), dtype=np.float32)
+        diff_state = np.zeros((height, width), dtype=np.float32)
+        # diff_state = np.ones((height, width), dtype=np.float32)
+
+        # covariance_state = np.full((height, width),c*c, dtype=np.float32)
+        covariance_state = np.zeros((height, width), dtype=np.float32)
         image_list = []
         frame_idx = 0
         max_frame_idx = len(frames) - 1
-        #TODO define MV filter parameter like x(list), F0，xxx, 
-        #you may predefine diffenet Fk,Rk ... to save time
-
         for i, e in enumerate(events):
             if frame_idx < max_frame_idx:
                 # print(e.t)
@@ -40,20 +45,26 @@ def kalman_filter(event_data, process_noise=0.1, observation_noise=0.5):
 
             # Kalman filter update step
             # You need to implement the Kalman filter equations here
-            
-            # Prediction step: x_k = F * x + w, P_k = F * P * F^T + Q
-            # Update step: K = P_k * H^T * (H * P_k * H^T + R)^-1
-            #              x = x_k + K * (z - H * x_k), P = (I - K * H) * P_k
 
-            # Here, 'e' represents the event data point
-            
-            # Update time_surface and image_state
-            
+            #parameter calculate
+            Fk = 1
+            # #Sk is wkvk, Qk is wkwk, R is vkvk, normally Qk> RK
+            # Sk=0
+            # Qk=0.001 
+            # Rk=0.05
+            Sk=0
+            Qk=0.1
+            Rk=1
+            #update
+            P = covariance_state[e.y, e.x]
+            K = (Fk*P*1/c + Sk)/(1/c*P*1/c + Rk)
+            diff_state[e.y, e.x] = Fk*diff_state[e.y, e.x] + K*(e.p - 1/c * diff_state[e.y, e.x])
+            covariance_state[e.y, e.x] = (Fk-K*1/c)*P*(Fk-K*1/c)+Qk+K*Rk*K-2*Sk*K           
             # Keep track of image state and time surface
             time_surface[e.y, e.x] = e.t
 
             #update log-intensity through 
-            image_state[e.y, e.x] 
+            image_state[e.y, e.x] = image_state[e.y, e.x] + diff_state[e.y, e.x]
 
             if i % events_per_frame == 0:
                 # Perform Kalman filter update step every events_per_frame events

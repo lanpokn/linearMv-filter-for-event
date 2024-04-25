@@ -8,6 +8,8 @@ import numpy as np
 # local modules
 from util import Timer, Event, normalize_image, animate, load_events,load_events_volt, plot_3d, event_slice
 
+from LinearMV import kalman_filter
+
 def high_pass_filter(event_data, cutoff_frequency=5):
     print('Reconstructing, please wait...')
     events, height, width = event_data.event_list, event_data.height, event_data.width
@@ -108,8 +110,9 @@ def save_image(image, index, folder_path):
     # Saving image
     # print("output")
     # Convert to uint8 before saving with OpenCV
-    # image_uint8 = (image * 255).astype(np.uint8)
+    # image_uint8 = (image * 255).astype(np.uint8)-
     # # Saving image with OpenCV
     # cv2.imwrite(file_path, image_uint8)
     plt.imsave(file_path, image, cmap='gray')
-complementary_filter(event_data=event_data, cutoff_frequency=20)
+# complementary_filter(event_data=event_data, cutoff_frequency=20)
+kalman_filter(event_data,0.01)
