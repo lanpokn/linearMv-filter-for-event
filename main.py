@@ -116,4 +116,4 @@ def save_image(image, index, folder_path):
     plt.imsave(file_path, image, cmap='gray')
 # complementary_filter(event_data=event_data, cutoff_frequency=20)
 filter = KalmanFilter(event_data=event_data,c=0.01)
-filter.run()
+filter.Kalman_run()
