@@ -97,6 +97,7 @@ class KalmanFilter:
                 #parameter calculate
                 Fk = self.getFk(e.x,e.y,e.t)
                 # #Sk is wkvk, Qk is wkwk, R is vkvk, normally Rk> QK
+                # but your xk+1 is totally blind, thus Qk more than c^2, while Rk can be small(from oberve data)
                 Sk=0
                 Qk=0.1
                 Rk=1
