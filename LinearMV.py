@@ -89,7 +89,7 @@ class KalmanFilter:
                         processed_image_state = 2 ** image_state - 1
                         # processed_image_state = image_state
                         image_list.append(processed_image_state)
-                        self.save_image(processed_image_state, frame_idx+2, folder_path="D:/2024/3DGS/PureEventFilter/data/mic_colmap_easy/output_images")
+                        save_image(processed_image_state, frame_idx+2)
 
                 # Kalman filter update step
                 # You need to implement the Kalman filter equations here
@@ -142,7 +142,7 @@ class KalmanFilter:
                         processed_image_state = 2 ** image_state - 1
                         # processed_image_state = image_state
                         image_list.append(processed_image_state)
-                        self.save_image(processed_image_state, frame_idx+2, folder_path="D:/2024/3DGS/PureEventFilter/data/mic_colmap_easy/output_images")
+                        save_image(processed_image_state, frame_idx+2)
 
                 # Kalman filter update step
                 # You need to implement the Kalman filter equations here
@@ -171,14 +171,14 @@ class KalmanFilter:
                              + self.c * diff_state[e.y,e.x]
 
         return image_list
-    def save_image(self,image, index, folder_path):
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
-        file_path = os.path.join(folder_path, f"{index:05d}.png")
-        # Saving image
-        # print("output")
-        # Convert to uint8 before saving with OpenCV
-        # image_uint8 = (image * 255).astype(np.uint8)-
-        # # Saving image with OpenCV
-        # cv2.imwrite(file_path, image_uint8)
-        plt.imsave(file_path, image, cmap='gray')
+def save_image(image, index, folder_path="D:/2024/3DGS/PureEventFilter/data/boxes_6dof/output_images_com"):
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    file_path = os.path.join(folder_path, f"{index:05d}.png")
+    # Saving image
+    # print("output")
+    # Convert to uint8 before saving with OpenCV
+    # image_uint8 = (image * 255).astype(np.uint8)-
+    # # Saving image with OpenCV
+    # cv2.imwrite(file_path, image_uint8)
+    plt.imsave(file_path, image, cmap='gray')
