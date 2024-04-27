@@ -44,6 +44,7 @@ class KalmanFilter:
     #             break
         return init_state
     def getFk(self,x,y,t):
+        #do not sure xk+1,thus Fk small but noise big
         # # 确定九个点的坐标
         # x_range = np.clip(np.arange(x-1, x+2), 0, self.time_surface.shape[1]-1)
         # y_range = np.clip(np.arange(y-1, y+2), 0, self.time_surface.shape[0]-1)
@@ -58,7 +59,13 @@ class KalmanFilter:
         #     return 1
         # else:
         #     return -1
-        return 1
+        return 0.1
+    def getRk(self,x,y,t):
+        ##design it by the newest paper:
+        #
+        Q = 0
+        #original paper, e()from +c to -c, thus I need to divide c^2 in the result
+        return Q/(self.c*self.c)
     def Kalman_run(self):
         print('Filtering with Kalman Filter, please wait...')
         event_data = self.event_data
@@ -99,8 +106,8 @@ class KalmanFilter:
                 # #Sk is wkvk, Qk is wkwk, R is vkvk, normally Rk> QK
                 # but your xk+1 is totally blind, thus Qk more than c^2, while Rk can be small(from oberve data)
                 Sk=0
-                Qk=0.1
-                Rk=1
+                Qk=4/9*c*c
+                Rk=self.getRk(e.x,e.y,e.t)
                 #update
                 P = covariance_state[e.y, e.x]
                 K = (Fk*P*1/c + Sk)/(1/c*P*1/c + Rk)

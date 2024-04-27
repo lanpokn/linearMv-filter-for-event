@@ -98,7 +98,7 @@ true_image_dir = "data/boxes_6dof/images"
 # true_image_dir = "data/boxes_6dof/output_images_pure"
 # e2_image_dir = "data/boxes_6dof/images_e2"
 # filter_image_dir = "data/boxes_6dof/output_images"
-filter_image_dir = "data/boxes_6dof/output_images_pure"
+filter_image_dir = "data/boxes_6dof/output_images_com"
 
 # Calculate metrics for e2 images
 # e2_mse_values, e2_psnr_values = calculate_metrics(true_image_dir, e2_image_dir)

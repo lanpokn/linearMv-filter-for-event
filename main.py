@@ -63,7 +63,7 @@ def complementary_filter(event_data, cutoff_frequency=5.0):
             # image_state[e.y, e.x] = beta * image_state[e.y, e.x] \
             #                         + (1 - beta) * log_frame[e.y, e.x] + 0.1 * e.p
             image_state[e.y, e.x] = beta * image_state[e.y, e.x] \
-                        + (1 - beta) * 0 + 0.1 * e.p
+                        + (1 - beta) * 0 + 0.01 * e.p
 
             time_surface[e.y, e.x] = e.t
             if i % events_per_frame == 0:
