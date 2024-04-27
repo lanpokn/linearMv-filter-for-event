@@ -13,12 +13,14 @@ import numpy as np
 
 # local modules
 from util import Timer, Event, normalize_image, animate, load_events,load_events_volt, plot_3d, event_slice
+from tqdm import tqdm
 
 class KalmanFilter:
     def __init__(self,event_data,c = 0.1) -> None:
         self.event_data = event_data
         self.c = c
         self.noise_period_bound = 500*1e-6
+        self.refractory_bound = 1e3 * 1e-6
         self.cutoff_frequency = 20.0
     def initialState(self,event_data,c=0.1):
     #     # Initialize an array of the same size as diff_state to store the event intensity corresponding to the minimum timestamp
@@ -59,13 +61,40 @@ class KalmanFilter:
         #     return 1
         # else:
         #     return -1
-        return 0.1
+        return 0.01
     def getRk(self,x,y,t):
         ##design it by the newest paper:
-        #
-        Q = 0
+        #t microsecond ,us 1e6
+        # sigma_ref = 0.01
+        # sigma_proc = 0.0005
+        # sigma_iso = 0.03
+        
+        #RK should around 1, may be I should not divide c
+        sigma_ref = 0.1
+        sigma_proc = 0.005
+        sigma_iso = 0.3
+        t_diff = (t-self.time_surface[y,x])
+        Q_proc = sigma_proc*(t_diff)
+
+        # 确定九个点的坐标
+        x_range = np.clip(np.arange(x-1, x+2), 0, self.time_surface.shape[1]-1)
+        y_range = np.clip(np.arange(y-1, y+2), 0, self.time_surface.shape[0]-1)
+        # 提取九个点的时间值
+        neighbor_times = self.time_surface[y_range[:, None], x_range]
+        # 获取最大值所在位置的索引
+        max_index = np.unravel_index(np.argmax(neighbor_times), neighbor_times.shape)
+        # 获取最大值
+        t_Np = (t-neighbor_times[max_index])
+        Q_iso = sigma_iso*(t-t_Np)
+
+        if t_diff>self.refractory_bound:
+            Q_ref = 0
+        else:
+            Q_ref = sigma_ref
+        Q = Q_iso+Q_proc+Q_ref
         #original paper, e()from +c to -c, thus I need to divide c^2 in the result
-        return Q/(self.c*self.c)
+        # return Q/(self.c*self.c)
+        return Q
     def Kalman_run(self):
         print('Filtering with Kalman Filter, please wait...')
         event_data = self.event_data
@@ -86,7 +115,7 @@ class KalmanFilter:
             image_list = []
             frame_idx = 0
             max_frame_idx = len(frames) - 1
-            for i, e in enumerate(events):
+            for i, e in tqdm(enumerate(events), total=len(events)):
                 if frame_idx < max_frame_idx:
                     # print(e.t)
 
@@ -106,7 +135,7 @@ class KalmanFilter:
                 # #Sk is wkvk, Qk is wkwk, R is vkvk, normally Rk> QK
                 # but your xk+1 is totally blind, thus Qk more than c^2, while Rk can be small(from oberve data)
                 Sk=0
-                Qk=4/9*c*c
+                Qk=4/9*c*c * 10
                 Rk=self.getRk(e.x,e.y,e.t)
                 #update
                 P = covariance_state[e.y, e.x]
@@ -179,7 +208,7 @@ class KalmanFilter:
                              + self.c * diff_state[e.y,e.x]
 
         return image_list
-def save_image(image, index, folder_path="D:/2024/3DGS/PureEventFilter/data/boxes_6dof/output_images_com"):
+def save_image(image, index, folder_path="D:/2024/3DGS/PureEventFilter/data/mic_colmap_easy/output_images"):
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     file_path = os.path.join(folder_path, f"{index:05d}.png")

@@ -112,23 +112,15 @@ def leaky_integrator(event_data, beta=1.0,c=0.01):
 
 with Timer('Loading'):
     n_events = 1e8
-    # path_to_events = "D:/2024/3DGS/PureEventFilter/data/mic_colmap_easy/mic_volt.txt"
-    # event_data = load_events_volt(path_to_events, n_events)
-    path_to_events = "D:/2024/3DGS/PureEventFilter/data/boxes_6dof/events.zip"
-    event_data = load_events(path_to_events, n_events)           
-# with Timer('3D plot'):
-#     plot_3d(event_data, n_events=5e3)
-# event_slice(event_data=event_data,
-#         start=FloatSlider(min=0, max=1, step=0.01,continuous_update=False),
-#         duration_ms=IntSlider(value=50, min=0, max=500, step=1, continuous_update=False))
-# event_slice(event_data=event_data,
-#         start=0,
-#         duration_ms=1)
+    path_to_events = "D:/2024/3DGS/PureEventFilter/data/mic_colmap_easy/mic_volt.txt"
+    event_data = load_events_volt(path_to_events, n_events)
+    # path_to_events = "D:/2024/3DGS/PureEventFilter/data/boxes_6dof/events.zip"
+    # event_data = load_events(path_to_events, n_events)           
 
-# event_data.add_frame_data('data/mic_colmap_easy')
-event_data.add_frame_data('data/boxes_6dof')
+event_data.add_frame_data('data/mic_colmap_easy')
+# event_data.add_frame_data('data/boxes_6dof')
 
-complementary_filter(event_data=event_data, cutoff_frequency=20)
-# filter = KalmanFilter(event_data=event_data,c=0.01)
-# filter.Kalman_run()
+# complementary_filter(event_data=event_data, cutoff_frequency=20)
+filter = KalmanFilter(event_data=event_data,c=0.01)
+filter.Kalman_run()
 # leaky_integrator(event_data,c=0.1)
