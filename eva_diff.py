@@ -80,11 +80,13 @@ def calculate_metrics2(image_dir1, image_dir2):
         # Calculate MSE and PSNR between difference images
         diff_image1 = curr_image1 - prev_image1
         diff_image2 = curr_image2 - prev_image2
-        diff_image1_normalized = cv2.normalize(diff_image1, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-        diff_image2_normalized = cv2.normalize(diff_image2, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-        # 保存图像
-        cv2.imwrite('diff_image1.png', diff_image1_normalized)
-        cv2.imwrite('diff_image2.png', diff_image2_normalized)
+
+        # diff_image1_normalized = cv2.normalize(diff_image1, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+        # diff_image2_normalized = cv2.normalize(diff_image2, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+        # # 保存图像
+        # cv2.imwrite('diff_image1.png', diff_image1_normalized)
+        # cv2.imwrite('diff_image2.png', diff_image2_normalized)
+        
         mse_value = mse(diff_image1, diff_image2)
         psnr_value = psnr(mse_value)
 
@@ -99,8 +101,8 @@ def calculate_metrics2(image_dir1, image_dir2):
 # filter_image_dir = "data/mic_colmap_easy/output_images"
 # # filter_image_dir = "data/mic_colmap_easy/output_images_pure"
 
-# true_image_dir = "data/boxes_6dof/images"
-true_image_dir = "data/boxes_6dof/output_images_pure"
+true_image_dir = "data/boxes_6dof/images"
+# true_image_dir = "data/boxes_6dof/output_images_pure"
 # e2_image_dir = "data/boxes_6dof/images_e2"
 # filter_image_dir = "data/boxes_6dof/output_images_com"
 filter_image_dir = "data/boxes_6dof/output_images"

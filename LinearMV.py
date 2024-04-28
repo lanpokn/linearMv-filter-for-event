@@ -70,9 +70,9 @@ class KalmanFilter:
         # sigma_iso = 0.03
         
         #RK should around 1, may be I should not divide c
-        sigma_ref = 0.1
-        sigma_proc = 0.005
-        sigma_iso = 0.3
+        sigma_ref = 0.01
+        sigma_proc = 0.0005
+        sigma_iso = 0.03
         t_diff = (t-self.time_surface[y,x])
         Q_proc = sigma_proc*(t_diff)
 
@@ -135,7 +135,7 @@ class KalmanFilter:
                 # #Sk is wkvk, Qk is wkwk, R is vkvk, normally Rk> QK
                 # but your xk+1 is totally blind, thus Qk more than c^2, while Rk can be small(from oberve data)
                 Sk=0
-                Qk=4/9*c*c * 10
+                Qk=4/9*c*c *10000
                 Rk=self.getRk(e.x,e.y,e.t)
                 #update
                 P = covariance_state[e.y, e.x]
@@ -208,7 +208,7 @@ class KalmanFilter:
                              + self.c * diff_state[e.y,e.x]
 
         return image_list
-def save_image(image, index, folder_path="D:/2024/3DGS/PureEventFilter/data/mic_colmap_easy/output_images"):
+def save_image(image, index, folder_path="D:/2024/3DGS/PureEventFilter/data/boxes_6dof/output_images"):
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     file_path = os.path.join(folder_path, f"{index:05d}.png")
