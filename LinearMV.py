@@ -208,7 +208,7 @@ class KalmanFilter:
                              + self.c * diff_state[e.y,e.x]
 
         return image_list
-def save_image(image, index, folder_path="D:/2024/3DGS/PureEventFilter/data/boxes_6dof/output_images"):
+def save_image(image, index, folder_path="D:/2024/3DGS/PureEventFilter/data/mic_colmap_easy/output_images"):
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     file_path = os.path.join(folder_path, f"{index:05d}.png")

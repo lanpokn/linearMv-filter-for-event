@@ -60,16 +60,16 @@ def complementary_filter(event_data, cutoff_frequency=5.0):
                     save_image(processed_image_state, frame_idx+2)
 
             beta = math.exp(-cutoff_frequency * (e.t - time_surface[e.y, e.x]))
-            # image_state[e.y, e.x] = beta * image_state[e.y, e.x] \
-            #                         + (1 - beta) * log_frame[e.y, e.x] + 0.1 * e.p
             image_state[e.y, e.x] = beta * image_state[e.y, e.x] \
-                        + (1 - beta) * 0 + 0.01 * e.p
+                                    + (1 - beta) * log_frame[e.y, e.x] + 0.01 * e.p
+            # image_state[e.y, e.x] = beta * image_state[e.y, e.x] \
+            #             + (1 - beta) * 0 + 0.01 * e.p
 
             time_surface[e.y, e.x] = e.t
             if i % events_per_frame == 0:
                 beta = np.exp(-cutoff_frequency * (e.t - time_surface))
-                image_state = beta * image_state + (1 - beta) * (2 ** 0 - 1)
-                # image_state = beta * image_state + (1 - beta) *  log_frame
+                # image_state = beta * image_state + (1 - beta) * (2 ** 0 - 1)
+                image_state = beta * image_state + (1 - beta) *  log_frame
                 time_surface.fill(e.t)
                 image_list.append(np.copy(image_state))
     return animate(image_list, 'Complementary Filter')
@@ -112,15 +112,15 @@ def leaky_integrator(event_data, beta=1.0,c=0.01):
 
 with Timer('Loading'):
     n_events = 1e8
-    # path_to_events = "D:/2024/3DGS/PureEventFilter/data/mic_colmap_easy/mic_volt.txt"
-    # event_data = load_events_volt(path_to_events, n_events)
-    path_to_events = "D:/2024/3DGS/PureEventFilter/data/boxes_6dof/events.zip"
-    event_data = load_events(path_to_events, n_events)           
+    path_to_events = "D:/2024/3DGS/PureEventFilter/data/mic_colmap_easy/mic_volt.txt"
+    event_data = load_events_volt(path_to_events, n_events)
+    # path_to_events = "D:/2024/3DGS/PureEventFilter/data/boxes_6dof/events.zip"
+    # event_data = load_events(path_to_events, n_events)           
 
-# event_data.add_frame_data('data/mic_colmap_easy')
-event_data.add_frame_data('data/boxes_6dof')
+event_data.add_frame_data('data/mic_colmap_easy')
+# event_data.add_frame_data('data/boxes_6dof')
 
-# complementary_filter(event_data=event_data, cutoff_frequency=20)
-filter = KalmanFilter(event_data=event_data,c=0.01)
-filter.Kalman_run()
+complementary_filter(event_data=event_data, cutoff_frequency=20)
+# filter = KalmanFilter(event_data=event_data,c=0.01)
+# filter.Kalman_run()
 # leaky_integrator(event_data,c=0.1)
