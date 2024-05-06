@@ -54,16 +54,16 @@ def complementary_filter(event_data, cutoff_frequency=5.0,c=0.1,Is_images = Fals
             if frame_idx < max_frame_idx:
                 # print(e.t)
 
-                if e.t >= frame_timestamps[frame_idx + 0.0001]:
+                if e.t >= frame_timestamps[frame_idx + 1]:
                     if Is_images:
-                        log_frame = np.log(frames[frame_idx + 1] + 1)
+                        log_frame = np.log(frames[frame_idx + 1]*(math.e-1) + 1)
                     else:
                         log_frame = np.full((height, width), 0.73, dtype=np.float32)
 
                     frame_idx += 1
 
                     # Process image_state and save to folder
-                    processed_image_state = math.e ** image_state - math.e
+                    processed_image_state = (math.e ** image_state - 1)/(math.e-1)
                     # processed_image_state = image_state
                     save_image(processed_image_state, frame_idx+2,folder_path)
 
@@ -91,17 +91,17 @@ def leaky_integrator(event_data, beta=1.0,c=0.01):
     with Timer('Reconstruction (simple)'):
         image_state = np.full((height, width), 0.73, dtype=np.float32)
         image_list = []
-        processed_image_state = 2 ** image_state - 1
+        processed_image_state = (math.e ** image_state - 1)/(math.e-1)
         save_image(processed_image_state, frame_idx+2,folder_path)
         for i, e in enumerate(events):
             if frame_idx < max_frame_idx:
                 # print(e.t)
 
-                if e.t >= frame_timestamps[frame_idx + 0.0001]:
+                if e.t >= frame_timestamps[frame_idx + 1]:
                     frame_idx += 1
 
                     # Process image_state and save to folder
-                    processed_image_state = math.e ** image_state - math.e
+                    processed_image_state = (math.e ** image_state - 1)/(math.e-1)
                     # processed_image_state = image_state
                     save_image(processed_image_state, frame_idx+2)
             image_state[e.y, e.x] = beta * image_state[e.y, e.x] + c*e.p
