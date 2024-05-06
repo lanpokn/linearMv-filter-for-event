@@ -81,7 +81,7 @@ def complementary_filter(event_data, cutoff_frequency=5.0,c=0.1,Is_images = Fals
                 time_surface.fill(e.t)
                 image_list.append(np.copy(image_state))
     return
-def leaky_integrator(event_data, beta=1.0,c=0.01):
+def leaky_integrator(event_data, beta=1.0,c=0.01,folder_path = ""):
     print('Reconstructing, please wait...')
     events, height, width = event_data.event_list, event_data.height, event_data.width
     frames, frame_timestamps = event_data.frames, event_data.frame_timestamps
@@ -103,7 +103,7 @@ def leaky_integrator(event_data, beta=1.0,c=0.01):
                     # Process image_state and save to folder
                     processed_image_state = (math.e ** image_state - 1)/(math.e-1)
                     # processed_image_state = image_state
-                    save_image(processed_image_state, frame_idx+2)
+                    save_image(processed_image_state, frame_idx+2,folder_path)
             image_state[e.y, e.x] = beta * image_state[e.y, e.x] + c*e.p
     # fig_title = 'Direct Integration' if beta == 1 else 'Leaky Integrator'
     return
@@ -118,7 +118,7 @@ def leaky_integrator(event_data, beta=1.0,c=0.01):
 #     # # Saving image with OpenCV
 #     # cv2.imwrite(file_path, image_uint8)
 #     plt.imsave(file_path, image, cmap='gray')
-name = "ship"
+name = "mic"
 with Timer('Loading'):
     n_events = 1e8
     path_to_events = "D:/2024/3DGS/PureEventFilter/data/"+name+"_colmap_easy/"+name+"_volt.txt"

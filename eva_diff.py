@@ -97,7 +97,7 @@ def calculate_metrics2(image_dir1, image_dir2):
 
     return mse_values, psnr_values
 
-name = "ship"
+name = "mic"
 
 true_image_dir = "data/"+name+"_colmap_easy/images_true"
 e2_image_dir = "data/"+name+"_colmap_easy/images"
