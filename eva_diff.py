@@ -97,7 +97,7 @@ def calculate_metrics2(image_dir1, image_dir2):
 
     return mse_values, psnr_values
 
-name = "mic"
+name = "chair"
 
 true_image_dir = "data/"+name+"_colmap_easy/images_true"
 e2_image_dir = "data/"+name+"_colmap_easy/images"
@@ -114,8 +114,8 @@ avg_e2_psnr = np.mean(e2_psnr_values)
 print("Metrics for e2 images:")
 print("Average MSE:", avg_e2_mse)
 print("Average PSNR:", avg_e2_psnr)
-# Calculate metrics for filter images
-filter_mse_values, filter_psnr_values = calculate_metrics2(true_image_dir, com_image_dir)
+
+filter_mse_values, filter_psnr_values = calculate_metrics2(true_image_dir, pure_image_dir)
 
 # Calculate average MSE and PSNR
 
@@ -123,7 +123,7 @@ avg_filter_mse = np.mean(filter_mse_values)
 avg_filter_psnr = np.mean(filter_psnr_values)
 
 
-print("/nMetrics for com_image_dir:")
+print("/nMetrics for pure_image_dir images:")
 print("Average MSE:", avg_filter_mse)
 print("Average PSNR:", avg_filter_psnr)
 
@@ -139,7 +139,9 @@ print("/nMetrics for hybrid_com_image_dir images:")
 print("Average MSE:", avg_filter_mse)
 print("Average PSNR:", avg_filter_psnr)
 
-filter_mse_values, filter_psnr_values = calculate_metrics2(true_image_dir, pure_image_dir)
+
+# Calculate metrics for filter images
+filter_mse_values, filter_psnr_values = calculate_metrics2(true_image_dir, com_image_dir)
 
 # Calculate average MSE and PSNR
 
@@ -147,6 +149,7 @@ avg_filter_mse = np.mean(filter_mse_values)
 avg_filter_psnr = np.mean(filter_psnr_values)
 
 
-print("/nMetrics for pure_image_dir images:")
+print("/nMetrics for com_image_dir:")
 print("Average MSE:", avg_filter_mse)
 print("Average PSNR:", avg_filter_psnr)
+

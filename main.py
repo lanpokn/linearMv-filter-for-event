@@ -118,7 +118,7 @@ def leaky_integrator(event_data, beta=1.0,c=0.01,folder_path = ""):
 #     # # Saving image with OpenCV
 #     # cv2.imwrite(file_path, image_uint8)
 #     plt.imsave(file_path, image, cmap='gray')
-name = "mic"
+name = "chair"
 with Timer('Loading'):
     n_events = 1e8
     path_to_events = "D:/2024/3DGS/PureEventFilter/data/"+name+"_colmap_easy/"+name+"_volt.txt"
