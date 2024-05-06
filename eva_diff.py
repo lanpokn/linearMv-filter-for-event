@@ -1,5 +1,5 @@
 #the begin of the two images folder must have the same begin, or there won't be aligned!
-#pure: integrate, com: no images
+#pure: integrate, com: no images, ie, high pass filter for event
 import os
 import cv2
 import numpy as np
@@ -96,23 +96,15 @@ def calculate_metrics2(image_dir1, image_dir2):
         psnr_values.append(psnr_value)
 
     return mse_values, psnr_values
-# Directories for images
+
 name = "ship"
-# true_image_dir = "data/mic_colmap_easy/images"
-# e2_image_dir = "data/mic_colmap_easy/images_e2"
-# filter_image_dir = "data/mic_colmap_easy/output_images"
 
 true_image_dir = "data/"+name+"_colmap_easy/images_true"
 e2_image_dir = "data/"+name+"_colmap_easy/images"
-filter_image_dir = "data/"+name+"_colmap_easy/output_images_com"
+com_image_dir = "data/"+name+"_colmap_easy/output_images_com"
+hybrid_com_image_dir = "data/"+name+"_colmap_easy/output_images"
+pure_image_dir  = "data/"+name+"_colmap_easy/output_images_pure"
 
-# filter_image_dir = "data/mic_colmap_easy/output_images_pure"
-
-# true_image_dir = "data/boxes_6dof/images"
-# # true_image_dir = "data/boxes_6dof/output_images_pure"
-# # e2_image_dir = "data/boxes_6dof/images_e2"
-# # filter_image_dir = "data/boxes_6dof/output_images_com"
-# filter_image_dir = "data/boxes_6dof/output_images"
 
 # Calculate metrics for e2 images
 e2_mse_values, e2_psnr_values = calculate_metrics(true_image_dir, e2_image_dir)
@@ -123,7 +115,7 @@ print("Metrics for e2 images:")
 print("Average MSE:", avg_e2_mse)
 print("Average PSNR:", avg_e2_psnr)
 # Calculate metrics for filter images
-filter_mse_values, filter_psnr_values = calculate_metrics2(true_image_dir, filter_image_dir)
+filter_mse_values, filter_psnr_values = calculate_metrics2(true_image_dir, com_image_dir)
 
 # Calculate average MSE and PSNR
 
@@ -131,6 +123,30 @@ avg_filter_mse = np.mean(filter_mse_values)
 avg_filter_psnr = np.mean(filter_psnr_values)
 
 
-print("/nMetrics for filter images:")
+print("/nMetrics for com_image_dir:")
+print("Average MSE:", avg_filter_mse)
+print("Average PSNR:", avg_filter_psnr)
+
+filter_mse_values, filter_psnr_values = calculate_metrics2(true_image_dir, hybrid_com_image_dir)
+
+# Calculate average MSE and PSNR
+
+avg_filter_mse = np.mean(filter_mse_values)
+avg_filter_psnr = np.mean(filter_psnr_values)
+
+
+print("/nMetrics for hybrid_com_image_dir images:")
+print("Average MSE:", avg_filter_mse)
+print("Average PSNR:", avg_filter_psnr)
+
+filter_mse_values, filter_psnr_values = calculate_metrics2(true_image_dir, pure_image_dir)
+
+# Calculate average MSE and PSNR
+
+avg_filter_mse = np.mean(filter_mse_values)
+avg_filter_psnr = np.mean(filter_psnr_values)
+
+
+print("/nMetrics for pure_image_dir images:")
 print("Average MSE:", avg_filter_mse)
 print("Average PSNR:", avg_filter_psnr)
