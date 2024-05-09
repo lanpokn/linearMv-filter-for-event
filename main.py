@@ -48,7 +48,7 @@ def complementary_filter(event_data, cutoff_frequency=5.0,c=0.1,Is_images = Fals
             log_frame = np.full((height, width), 0.73, dtype=np.float32)
         # print(frame_timestamps[frame_idx + 1])
         processed_image_state = 2 ** image_state - 1
-        save_image(processed_image_state, frame_idx+2,folder_path)
+        save_image(processed_image_state, frame_idx,folder_path)
 
         for i, e in enumerate(events):
             if frame_idx < max_frame_idx:
@@ -65,7 +65,7 @@ def complementary_filter(event_data, cutoff_frequency=5.0,c=0.1,Is_images = Fals
                     # Process image_state and save to folder
                     processed_image_state = (math.e ** image_state - 1)/(math.e-1)
                     # processed_image_state = image_state
-                    save_image(processed_image_state, frame_idx+2,folder_path)
+                    save_image(processed_image_state, frame_idx,folder_path)
 
             beta = math.exp(-cutoff_frequency * (e.t - time_surface[e.y, e.x]))
             image_state[e.y, e.x] = beta * image_state[e.y, e.x] \
@@ -74,7 +74,7 @@ def complementary_filter(event_data, cutoff_frequency=5.0,c=0.1,Is_images = Fals
             #             + (1 - beta) * 0 + 0.01 * e.p
 
             time_surface[e.y, e.x] = e.t
-            if i % events_per_frame == 0:
+            if i % events_per_frame == 0 and Is_images == True:
                 beta = np.exp(-cutoff_frequency * (e.t - time_surface))
                 # image_state = beta * image_state + (1 - beta) * (2 ** 0 - 1)
                 image_state = beta * image_state + (1 - beta) *  log_frame
@@ -92,7 +92,7 @@ def leaky_integrator(event_data, beta=1.0,c=0.01,folder_path = ""):
         image_state = np.full((height, width), 0.73, dtype=np.float32)
         image_list = []
         processed_image_state = (math.e ** image_state - 1)/(math.e-1)
-        save_image(processed_image_state, frame_idx+2,folder_path)
+        save_image(processed_image_state, frame_idx,folder_path)
         for i, e in enumerate(events):
             if frame_idx < max_frame_idx:
                 # print(e.t)
@@ -103,7 +103,7 @@ def leaky_integrator(event_data, beta=1.0,c=0.01,folder_path = ""):
                     # Process image_state and save to folder
                     processed_image_state = (math.e ** image_state - 1)/(math.e-1)
                     # processed_image_state = image_state
-                    save_image(processed_image_state, frame_idx+2,folder_path)
+                    save_image(processed_image_state, frame_idx,folder_path)
             image_state[e.y, e.x] = beta * image_state[e.y, e.x] + c*e.p
     # fig_title = 'Direct Integration' if beta == 1 else 'Leaky Integrator'
     return
@@ -118,10 +118,12 @@ def leaky_integrator(event_data, beta=1.0,c=0.01,folder_path = ""):
 #     # # Saving image with OpenCV
 #     # cv2.imwrite(file_path, image_uint8)
 #     plt.imsave(file_path, image, cmap='gray')
-name = "chair"
+name = "boxes_6dof"
 with Timer('Loading'):
     n_events = 1e8
-    path_to_events = "D:/2024/3DGS/PureEventFilter/data/"+name+"_colmap_easy/"+name+"_volt.txt"
+    # path_to_events = "D:/2024/3DGS/PureEventFilter/data/"+name+"_colmap_easy/"+name+"_volt.txt"
+    path_to_events = "D:/2024/3DGS/PureEventFilter/data/"+name+"_colmap_easy/"+"boxes.txt"
+
     event_data = load_events_volt(path_to_events, n_events)
 
 event_data.add_frame_data('data/'+name+'_colmap_easy')

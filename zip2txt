@@ -1,0 +1,59 @@
+# import zipfile
+# import os
+# import pandas as pd
+# import numpy as np
+# def unzip_events(zip_path, txt_path):
+#     print('Extracting events...')
+#     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+#         zip_ref.extractall(txt_path)
+
+# def convert_to_txt(txt_path, output_path):
+#     with open(txt_path, 'r') as infile:
+#         # 打开输出文件
+#         with open(output_path, 'w') as outfile:
+#             # 逐行处理输入文件
+#             for line in infile:
+#                 # 将每行分割成单个数字
+#                 parts = line.split()
+#                 if parts:
+#                     # 将第一个数字转换为浮点数并乘以 1e6
+#                     modified_number = float(parts[0]) * 1e6
+#                     # 写入结果到输出文件
+#                     outfile.write(f'{modified_number:.6f}/n')
+
+#     print("处理完成！")
+
+
+import pandas as pd
+import numpy as np
+
+def load_events(path_to_events, output_txt):
+    print('Loading events...')
+    header = pd.read_csv(path_to_events, delim_whitespace=True, names=['width', 'height'],
+                         dtype={'width': np.int16, 'height': np.int16}, nrows=1)
+    width, height = header.values[0]
+    print(f'width, height: {width}, {height}')
+    
+    with open(output_txt, 'w') as f_out:
+        f_out.write("t/tx/ty/tp/n")  # Writing header to the output file
+        
+        event_pd = pd.read_csv(path_to_events, delim_whitespace=True, header=None,
+                               names=['t', 'x', 'y', 'p'],
+                               dtype={'t': np.float64, 'x': np.int16, 'y': np.int16, 'p': np.int8},
+                               engine='c', skiprows=1, memory_map=True)
+        
+        for event in event_pd.values:
+            t, x, y, p = event
+            f_out.write(f"{int(t*1e6)}/t{int(x)}/t{int(y)}/t{int(p)}/n")  # Writing event to the output file
+def extract_floats_and_write(input_txt, output_txt):
+    with open(input_txt, 'r') as file_in:
+        lines = file_in.readlines()
+    
+    with open(output_txt, 'w') as file_out:
+        for line in lines:
+            # Split the line by space and take the last part which should be the float
+            parts = line.strip().split()
+            float_value = float(parts[-1])
+            file_out.write(f"{float_value*1e6}\n")
+# load_events('./data/boxes_6dof/events.zip','./data/boxes_6dof/boxes.txt')
+extract_floats_and_write('./data/boxes_6dof/image_timestamps.txt','./data/boxes_6dof/image_timestamps_e2.txt')
